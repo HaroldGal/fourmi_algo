@@ -127,9 +127,13 @@ def afficher_chemin(MeshVect, x, y, chemin, T):
 	plt.show()
 
 def maj_proba(proba, liste_chemin, liste_orientation):
+	# for i in range(len(proba)):
+	# 	proba[i] = max(0.,proba[i] - mu/4.)
 	for I, CheminI in enumerate(liste_chemin):
+		concentration = float(len(CheminI))
 		for J, OrientationJ in enumerate(liste_orientation[I]):
-			proba[CheminI[J][1]*size + CheminI[J][0] + OrientationJ * size * size] += mu
+			proba[CheminI[J][1]*size + CheminI[J][0] + OrientationJ * size * size] += 5 * mu/concentration
+
 
 
 if __name__ == '__main__':
@@ -140,19 +144,25 @@ if __name__ == '__main__':
 	(x, y, MeshVect, T) = mesh(X)
 	edge = initProba()
 
+	moyenne = []
 	liste_chemin = []
 	liste_direction = []
-	for j in range(5):
+	for j in range(20):
 		liste_chemin = []
 		liste_direction = []
 		for i in range(50):
 			chemin, direction = cheminFourmi(T[0], edge, T)
 			liste_chemin.append(chemin)
 			liste_direction.append(direction)
+		moyenne.append(sum([len(c) for c in liste_chemin])/50.0)
 		maj_proba(edge, liste_chemin, liste_direction)
+		if j%5==0:
+			chemin, direction = cheminFourmi(T[0], edge, T)
+			afficher_chemin(MeshVect, x, y, chemin, T)
 
 	longueur_chemins = [len(c) for c in liste_chemin]
 	idx = longueur_chemins.index(min(longueur_chemins))
 
 	best_path = liste_chemin[idx]
+	print(moyenne)
 	afficher_chemin(MeshVect, x, y, best_path, T)
