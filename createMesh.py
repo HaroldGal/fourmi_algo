@@ -1,10 +1,17 @@
 from numpy import meshgrid, cumsum, array
 import matplotlib.pyplot as plt
-from random import random, seed
+from random import random, seed, choice
 from collections import Counter
 
-size = 20
-mu = 0.2
+###### VAR GLOB #####
+
+size = 20 # taille maillage
+mu = 0.2 # pheromone
+dissip = 0.5 # dissipation par tour
+Nfourmi = 50 # nb fourmi par maj_colonie
+Ntour = 20 # nb de tour avec depot de pheromone
+
+#####################
 
 # proba
 # size**2 haut, gauche, bas, droite
@@ -18,7 +25,7 @@ def initProba():
 		proba[(size-1)*size + i +2*size*size] = 0 # bas de la derniere ligne
 	return proba
 
-
+# Maillage de notre domaine
 def mesh(Steiner_points):
 	Ndim = len(Steiner_points[0])
 
@@ -49,26 +56,30 @@ def mesh(Steiner_points):
 				borne = abs(X[0]-i)
 				j = idx
 		new_point.append(j)
+		borne = 1000
 		for idx, i in enumerate(MeshVect[1]):
 			if abs(X[1]-i) < borne:
 				borne = abs(X[1]-i)
 				j = idx
-		new_point.append(size-1 - j)
+		new_point.append(j)
 		T.append(new_point)
 
-	return (x,y, MeshVect, T)
+	return (x,y, MeshVect, T) # maillage x, maillage y, vecteur de maille, ...
+	# ... position matriciel des terminaux
 
+# affichage de la matrice proba
 def print_matrix_proba(matrice, taille):
 	for i in range(4*taille):
 		for j in range(taille):
 			print(matrice[i*taille + j], end =' ')
 		print()
 
+# simulation du trajet d'une fourmi
 def cheminFourmi(coord_fourmi, proba, term):
 
-
-	vertex_visite = [coord_fourmi]
-	chemin = [coord_fourmi]
+	depart = choice(coord_fourmi) # position random dans la colonie au depart
+	vertex_visite = coord_fourmi.copy() # elle ne se deplace pas dans la colonie
+	chemin = [depart] # point de depart
 	orientation = []
 	v = chemin[-1]
 	while(True):
@@ -79,7 +90,11 @@ def cheminFourmi(coord_fourmi, proba, term):
 		while(True):
 			if max_it > 20 : # on est bloque
 				chemin.pop() # On reste pas ici
-				orientation.pop()
+				if(len(orientation)>0): # attention sur Steiner point on peut etre bloque
+					orientation.pop()
+				else :
+					# Steiner point bloquant on annule tout on restart la fourmi
+					return cheminFourmi(coord_fourmi, proba, term)
 				v = chemin[-1] # On est mieux ici
 				case = v[1]*(size) + v[0]
 				proba_local = [proba[case + i*size*size] for i in range(4)]
@@ -109,60 +124,62 @@ def cheminFourmi(coord_fourmi, proba, term):
 		chemin.append(v)
 		orientation.append(idx)
 		vertex_visite.append(v)
-		#print(chemin)
-		#print('-----------------')
 		if(v in term):
 			break
-	return chemin, orientation
+	return chemin, orientation # chemin de la fourmi + orientation (1, 2, 3 ou 4)
 
-def afficher_chemin(MeshVect, x, y, chemin, T):
+# affiche un chemin
+def afficher_chemin(MeshVect, x, y, liste_chemin, T):
 
 	plt.scatter(x, y, s = 10)
 	plt.scatter([MeshVect[0][i[0]] for i in T],[MeshVect[1][i[1]] for i in T], s = 80, c = 'red')
-
-	for i in range(len(chemin)-1) :
-		X1, X2 = chemin[i], chemin[i+1]
-		plt.plot([MeshVect[0][X1[0]], MeshVect[0][X2[0]]], [MeshVect[1][X1[1]], MeshVect[1][X2[1]]], c='g' )
-
+	for chemin in liste_chemin:
+		for i in range(len(chemin)-1) :
+			X1, X2 = chemin[i], chemin[i+1]
+			plt.plot([MeshVect[0][X1[0]], MeshVect[0][X2[0]]], [MeshVect[1][X1[1]], MeshVect[1][X2[1]]], c='g' )
 	plt.show()
+	return
 
+# depot et dissipation de pheromone des N fourmis
 def maj_proba(proba, liste_chemin, liste_orientation):
-	# for i in range(len(proba)):
-	# 	proba[i] = max(0.,proba[i] - mu/4.)
+	for i in range(len(proba)):
+	 	proba[i] = proba[i]*dissip
 	for I, CheminI in enumerate(liste_chemin):
 		concentration = float(len(CheminI))
 		for J, OrientationJ in enumerate(liste_orientation[I]):
 			proba[CheminI[J][1]*size + CheminI[J][0] + OrientationJ * size * size] += 5 * mu/concentration
+	return
 
-
+# aggrandissement de la colonie a la fin dun tour
+def maj_colonie(colonie, best_path):
+	colonie.extend(best_path)
 
 if __name__ == '__main__':
 
-	#seed(1)
+	seed(1)
 
-	X = [[0.0,1.0], [0.0,0.],[1.0,0.0], [ 0.25, 0.85], [0.75, 0.2]]
+	X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7]]
 	(x, y, MeshVect, T) = mesh(X)
-	edge = initProba()
 
-	moyenne = []
-	liste_chemin = []
-	liste_direction = []
-	for j in range(20):
-		liste_chemin = []
-		liste_direction = []
-		for i in range(50):
-			chemin, direction = cheminFourmi(T[0], edge, T)
-			liste_chemin.append(chemin)
-			liste_direction.append(direction)
-		moyenne.append(sum([len(c) for c in liste_chemin])/50.0)
-		maj_proba(edge, liste_chemin, liste_direction)
-		if j%5==0:
-			chemin, direction = cheminFourmi(T[0], edge, T)
-			afficher_chemin(MeshVect, x, y, chemin, T)
 
-	longueur_chemins = [len(c) for c in liste_chemin]
-	idx = longueur_chemins.index(min(longueur_chemins))
-
-	best_path = liste_chemin[idx]
-	print(moyenne)
-	afficher_chemin(MeshVect, x, y, best_path, T)
+	colonie = [T[0]]
+	plot_chemin = []
+	#moyenne = []
+	for arete in range(len(X)-1):
+		edge = initProba()
+		print(colonie)
+		for j in range(Ntour):
+			liste_chemin = []
+			liste_direction = []
+			for i in range(Nfourmi):
+				chemin, direction = cheminFourmi(colonie, edge, T)
+				liste_chemin.append(chemin)
+				liste_direction.append(direction)
+			#moyenne.append(sum([len(c) for c in liste_chemin])/Nfourmi)
+			maj_proba(edge, liste_chemin, liste_direction)
+		longueur_chemins = [len(c) for c in liste_chemin]
+		idx = longueur_chemins.index(min(longueur_chemins))
+		best_path = liste_chemin[idx]
+		plot_chemin.append(best_path)
+		afficher_chemin(MeshVect, x, y, plot_chemin, T)
+		maj_colonie(colonie, best_path)
