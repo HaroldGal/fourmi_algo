@@ -158,7 +158,7 @@ if __name__ == '__main__':
 
 	seed(1)
 
-	X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7]]
+	X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
 	(x, y, MeshVect, T) = mesh(X)
 
 
@@ -183,3 +183,22 @@ if __name__ == '__main__':
 		plot_chemin.append(best_path)
 		afficher_chemin(MeshVect, x, y, plot_chemin, T)
 		maj_colonie(colonie, best_path)
+
+	# X= [[0.0,0.0], [0.25,0.5]]
+	# (x, y, MeshVect, T) = mesh(X)
+	# colonie = [T[0]]
+	# plot_chemin = []
+	# edge = initProba()
+	# for j in range(Ntour):
+	# 	plot_chemin = []
+	# 	liste_chemin = []
+	# 	liste_direction = []
+	# 	for i in range(Nfourmi):
+	# 		chemin, direction = cheminFourmi(colonie, edge, T)
+	# 		liste_chemin.append(chemin)
+	# 		liste_direction.append(direction)
+	# 	#moyenne.append(sum([len(c) for c in liste_chemin])/Nfourmi)
+	# 	maj_proba(edge, liste_chemin, liste_direction)
+	# 	chemin, direction = cheminFourmi(colonie, edge, T)
+	# 	plot_chemin.append(chemin)
+	# 	afficher_chemin(MeshVect, x, y, plot_chemin, T)
