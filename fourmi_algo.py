@@ -2,10 +2,11 @@ from numpy import meshgrid, cumsum, array
 import matplotlib.pyplot as plt
 from random import random, seed, choice
 from collections import Counter
+from math import log
 
 ###### VAR GLOB #####
 
-size = 20 # taille maillage
+size = 10 # taille maillage
 mu = 0.2 # pheromone
 dissip = 0.5 # dissipation par tour
 Nfourmi = 50 # nb fourmi par maj_colonie
@@ -15,6 +16,15 @@ Ntour = 20 # nb de tour avec depot de pheromone
 
 # proba
 # size**2 haut, gauche, bas, droite
+
+def norme_proba(Proba):
+	mat = [[0 for i in range(size)] for j in range(size)]
+	for i in range(size):
+		for j in range(size):
+			mat[i][j] = sum([Proba[k*size*size + i*size+j] for k in range(4)])
+	plt.matshow(mat, origin='lower')
+	plt.show()
+	#norm = []
 
 def initProba():
 	proba = [mu for i in range(4*size*size)] # 4 chemins possible de chaque noeud
@@ -177,12 +187,58 @@ if __name__ == '__main__':
 				liste_direction.append(direction)
 			#moyenne.append(sum([len(c) for c in liste_chemin])/Nfourmi)
 			maj_proba(edge, liste_chemin, liste_direction)
+		#norme_proba(edge)
 		longueur_chemins = [len(c) for c in liste_chemin]
 		idx = longueur_chemins.index(min(longueur_chemins))
 		best_path = liste_chemin[idx]
 		plot_chemin.append(best_path)
 		afficher_chemin(MeshVect, x, y, plot_chemin, T)
 		maj_colonie(colonie, best_path)
+
+	# X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
+	# (x, y, MeshVect, T) = mesh(X)
+	#
+	# #moyenne = []
+	# save = [0 for i in range(size*size*4)]
+	# for X0 in T:
+	# 	for X1 in T:
+	# 		if X0==X1 :
+	# 			continue
+	# 		edge = initProba()
+	# 		print("done")
+	# 		liste_chemin = []
+	# 		liste_direction = []
+	# 		for i in range(Nfourmi):
+	# 			chemin, direction = cheminFourmi([X0], edge, [X0,X1])
+	# 			liste_chemin.append(chemin)
+	# 			liste_direction.append(direction)
+	# 		#moyenne.append(sum([len(c) for c in liste_chemin])/Nfourmi)
+	# 		maj_proba(edge, liste_chemin, liste_direction)
+	# 		save = [save[i]+log(max(0.1,edge[i])) for i in range(len(edge))]
+	# norme_proba(save)
+
+
+	# X = [[0.0,1.0], [0.0,0.0], [1.0,1.0],[1.0,0.0]]
+	# (x, y, MeshVect, T) = mesh(X)
+	#
+	# #moyenne = []
+	# save = [0 for i in range(size*size*4)]
+	# for X0 in T:
+	# 	for X1 in T:
+	# 		if X0==X1 :
+	# 			continue
+	# 		edge = initProba()
+	# 		print("done")
+	# 		liste_chemin = []
+	# 		liste_direction = []
+	# 		for i in range(Nfourmi):
+	# 			chemin, direction = cheminFourmi([X0], edge, [X0,X1])
+	# 			liste_chemin.append(chemin)
+	# 			liste_direction.append(direction)
+	# 		#moyenne.append(sum([len(c) for c in liste_chemin])/Nfourmi)
+	# 		maj_proba(edge, liste_chemin, liste_direction)
+	# 		save = [save[i]+log(max(0.1,edge[i])) for i in range(len(edge))]
+	# norme_proba(save)
 
 	# X= [[0.0,0.0], [0.25,0.5]]
 	# (x, y, MeshVect, T) = mesh(X)
