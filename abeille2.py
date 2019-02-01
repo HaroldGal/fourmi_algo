@@ -78,4 +78,4 @@ if __name__ == '__main__':
         for j, bee in enumerate(bees):
             nearest = sonar(bee, [a for a in bees if a!=bee], T)
             bees[j] = deplacement2(bee, nearest)
-links[j] = nearest
+            links[j] = nearest

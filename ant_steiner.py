@@ -2,7 +2,8 @@ from numpy import meshgrid, cumsum, array
 import matplotlib.pyplot as plt
 from random import random, seed, choice
 from collections import Counter
-from math import log
+from math import log, sqrt
+import numpy as np
 
 ###### VAR GLOB #####
 
@@ -160,11 +161,50 @@ def maj_proba(proba, liste_chemin, liste_orientation):
 			proba[CheminI[J][1]*size + CheminI[J][0] + OrientationJ * size * size] += 5 * mu/concentration
 	return
 
+
+def fobj(bee,proche):
+	s=0
+	for p in proche :
+		s+= (p[0]-bee[0])**2 + (p[1]-bee[1])**2
+	return s
+
+def gradobj(bee,proche):
+	s = [0, 0]
+	for p in proche :
+		s[0]+=2*(bee[0]-p[0])
+		s[1]+=2*(bee[1]-p[1])
+	return s
+
+def deplacement2(bee, proche):
+    eps=0.001
+    alpha=0.002
+    grad=gradobj(bee,proche)
+    ngrad=grad[0]**2 + grad[1]**2
+    while ngrad>=eps:
+    	bee[0]=bee[0] - alpha*grad[0]
+    	bee[1]=bee[1] - alpha*grad[1]
+    	grad=gradobj(bee,proche)
+    	ngrad=grad[0]**2 + grad[1]**2
+    return bee
+
 def create_Steiner(MeshVect, X1, X2, X3):
 	point_Steiner = [0,0]
+	proche = []
 	for i in range(2):
 		point_Steiner[i] = (MeshVect[i][X1[i]] + MeshVect[i][X2[i]] + MeshVect[i][X3[i]])/3.0
+	a,b,c = [], [], []
+	for i in range(2):
+		a.append(MeshVect[i][X1[i]])
+		b.append(MeshVect[i][X2[i]])
+		c.append(MeshVect[i][X3[i]])
+	proche.append(a)
+	proche.append(b)
+	proche.append(c)
+
+	point_Steiner = deplacement2(point_Steiner, proche)
 	return point_Steiner
+
+
 # aggrandissement de la colonie a la fin dun tour
 def maj_colonie(colonie, best_path):
 	colonie.extend(best_path)
@@ -173,9 +213,18 @@ if __name__ == '__main__':
 
 	seed(1)
 
-	X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
+	# ON RENTRE ICI LES COORDONNEES DES TERMINAUX
+
+	#X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
+
+	X = [[1,0]]
+	for i in range(1,5):
+		X.append([np.cos(2*i*np.pi/5), np.sin(2*i*np.pi/5)])
+
+	##################################################
+
 	(x, y, MeshVect, T) = mesh(X)
-	X_visite = []
+	X_visite = [T[0]]
 	Steiner_points = []
 	link = []
 
@@ -199,6 +248,9 @@ if __name__ == '__main__':
 		idx = longueur_chemins.index(min(longueur_chemins))
 		best_path = liste_chemin[idx]
 		maj_colonie(colonie, best_path)
+
+		## CREATION POINT STEINER ##
+
 		X_visite.append(best_path[-1])
 		if len(X_visite)==3:
 			Steiner_points.append(create_Steiner(MeshVect, X_visite[-1],X_visite[-2],X_visite[-3]))
@@ -209,11 +261,19 @@ if __name__ == '__main__':
 		# plt.scatter([MeshVect[0][i[0]] for i in X_visite],[MeshVect[1][i[1]] for i in X_visite], s = 100, c = 'blue')
 		# plt.scatter([i[0] for i in Steiner_points],[i[1] for i in Steiner_points], s = 50, c = 'red')
 		# plt.show()
+
 	for j in range(1,(len(X_visite)-3)%2+1): #Il reste des points pas vu
 		norm = [(MeshVect[0][i[0]] - MeshVect[0][X_visite[-j][0]])**2 + (MeshVect[1][i[1]] - MeshVect[1][X_visite[-j][1]])**2 for i in X_visite if i!=X_visite[-j]]
 		idx = norm.index(min(norm))
 		Steiner_points.append([MeshVect[0][X_visite[idx][0]], MeshVect[1][X_visite[idx][1]]])
 		link.append([X_visite[-j]])
+
+	longueur = 0
+	for idx, liens in enumerate(link):
+		for arete in liens:
+			longueur += sqrt((Steiner_points[idx][0] - MeshVect[0][arete[0]])**2 + (Steiner_points[idx][1] - MeshVect[1][arete[1]])**2)
+
+	print("Longueur totale : " + str(longueur))
 
 	plt.scatter([MeshVect[0][i[0]] for i in T],[MeshVect[1][i[1]] for i in T], s = 100, c = 'blue')
 	plt.scatter([i[0] for i in Steiner_points],[i[1] for i in Steiner_points], s = 50, c = 'red')
@@ -221,7 +281,6 @@ if __name__ == '__main__':
 		for arete in liens:
 			plt.plot([Steiner_points[idx][0], MeshVect[0][arete[0]]], [Steiner_points[idx][1], MeshVect[1][arete[1]]], c='g' )
 	plt.show()
-
 
 
 
