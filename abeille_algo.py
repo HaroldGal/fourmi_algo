@@ -1,6 +1,7 @@
 from random import seed
 import matplotlib.pyplot as plt
 from random import random
+import numpy as np
 
 def create_abeille(T):
     bees = []
@@ -44,7 +45,11 @@ if __name__ == '__main__':
     seed(1)
     #T = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
     T = [[0.0,0.0], [0.0,1.0], [1.0,1.0], [1.0,0.0]]
-    T = [[0.0,0.0], [0.0,1.0], [1.0,1.0], [1.0,0.0]]
+    #T = [[0.0,0.0], [0.0,1.0], [1.0,1.0], [1.0,0.0]]
+
+    #T = [[1,0]]
+    #for i in range(1,5):
+    #    T.append([np.cos(2*i*np.pi/5), np.sin(2*i*np.pi/5)])
     bees = create_abeille(T)
     links = [[] for i in range(len(bees))]
     for i in range(5):

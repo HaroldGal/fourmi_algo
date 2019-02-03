@@ -128,11 +128,18 @@ def affichage(bees, T, links):
                 plt.plot([X0[0], X1[0]], [X0[1], X1[1]], c='green')
     plt.show()
 
+def longueur(links): # pas bon redondance aretes
+    somme = 0
+    for j in links:
+        for i in j:
+            somme+= sqrt(i[0]**2+i[1]**2)
+    return somme
+
 if __name__ == '__main__':
     seed(1)
-    #T = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
+    T = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
     #T = [[0.0,5.0], [0.0,0.], [2.5, 2.5], [2.0, 5*0.8], [3.5,3.5], [1.0,0.5], [ 1.5,3.5]]
-    T = [[0.0,0.0], [0.0,1.0], [1.0,1.0], [1.0,0.0]]
+    #T = [[0.0,0.0], [0.0,1.0], [1.0,1.0], [1.0,0.0]]
     bees = create_abeille(T)
     links = [[] for i in range(len(bees))]
     for i in range(8):
@@ -140,13 +147,14 @@ if __name__ == '__main__':
 
         for j, bee in enumerate(bees):
             #T = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
-            T = [[0.0,0.0], [0.0,1.0], [1.0,1.0], [1.0,0.0]]
+            #T = [[0.0,0.0], [0.0,1.0], [1.0,1.0], [1.0,0.0]]
             nearest = sonar2(bee, [a for a in bees if a!=bee], T)
             #nearest = sonar(bee, T)
-            T = [[0.0,0.0], [0.0,1.0], [1.0,1.0], [1.0,0.0]]
+            #T = [[0.0,0.0], [0.0,1.0], [1.0,1.0], [1.0,0.0]]
             #T = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]            
             bees[j] = deplacement2(bee, nearest)
             links[j] = nearest
-            
+    
+    #print(longueur(links))
     affichage(bees, T, links)
     print(bees)
