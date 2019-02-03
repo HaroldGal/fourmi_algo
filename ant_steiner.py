@@ -176,14 +176,16 @@ def gradobj(bee,proche):
 	return s
 
 def angles(proche): # p0-p1 = l2// p0-p2=l1 //p1-p2=l0
-
+    #longueur segments
     l0=sqrt( (proche[2][0]-proche[1][0])**2 + (proche[2][1]-proche[1][1])**2 )
     l1=sqrt( (proche[0][0]-proche[2][0])**2 + (proche[0][1]-proche[2][1])**2 )
     l2=sqrt( (proche[0][0]-proche[1][0])**2 + (proche[0][1]-proche[1][1])**2 )
     
     eps=0.0001
-    if (l0==0 or l1==0 or l2==0) :#or ((abs(l0-l1) <=eps) and (abs(l1-l2)<=eps) and (abs(l0-l2)<=eps)) ):
+    #triangle plat
+    if (l0==0 or l1==0 or l2==0) :
         return -1
+    #triangle equilateral
     if ( (abs(l0-l1) <=eps) and (abs(l1-l2)<=eps) and (abs(l0-l2)<=eps) ):
         return -2
     
@@ -191,7 +193,7 @@ def angles(proche): # p0-p1 = l2// p0-p2=l1 //p1-p2=l0
     B=float(l0**2 + l2**2 - l1**2)/ float(2.0*l0*l2)
     C=(l1**2 + l0**2 - l2**2)/ (2.0*l1*l0)
 
-
+    #pb float acos dans range [-1,1]
     Z=[A,B,C]
     for i in Z:
         if abs(float(i))<=1.0:
@@ -199,17 +201,11 @@ def angles(proche): # p0-p1 = l2// p0-p2=l1 //p1-p2=l0
                 i=-1.0
             else:
                 i=1.0
-      
+    #mesure angle
     a0= acos(Z[0])
     a1= acos(Z[1])
-    a2= acos(Z[2])
-#    print("long : l0,l1,l2")
-#    print(l0,l1,l2)
-#    print("val")
-#    print (A,B,C)
-#    print("arcos")
-#    print(a0,a1,a2)
-    
+    a2= acos(Z[2])    
+    # si angle >120 alors steiner se confond avec sommet
     if (a0 >=2*np.pi/3):
         return 0
     if (a1 >=2*np.pi/3):
@@ -219,6 +215,11 @@ def angles(proche): # p0-p1 = l2// p0-p2=l1 //p1-p2=l0
     
     return -1
 
+#triangle equilateral
+def deplacement(bee, proche):
+    bee = [sum([i[0] for i in proche])/3.0, sum([i[1] for i in proche])/3.0]
+    return bee
+
 def deplacement2(bee, proche):
     
     #teste angle >=120
@@ -227,9 +228,11 @@ def deplacement2(bee, proche):
         bee=proche[ind]
         return bee
     
+    #triangle equilateral
     if (ind==-2) :
         return deplacement(bee,proche)
-    # sinon decente gradient 
+    
+    # sinon descente gradient 
     eps=0.000001
     alpha=0.0002
     grad=gradobj(bee,proche)
