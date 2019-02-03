@@ -1,6 +1,9 @@
 from random import seed
 import matplotlib.pyplot as plt
-from random import random
+from random import random, shuffle
+import numpy as np
+from math import acos, sqrt
+
 
 def create_abeille(T):
     bees = []
@@ -12,18 +15,21 @@ def create_abeille(T):
         bees.append([min_x + random()*(max_x-min_x), min_y + random()*(max_y-min_y)])
     return bees
 
-def sonar(bee, bees, T):
+def sonar(bee, T):
     nearest = []
-
-    X = bees + T
+    #X=bees+T
+    X=T
     # calcul carre des normes
     normes= []
     for i in X:
-        normes.append(abs((bee[0]-i[0])**2 + (bee[1]-i[1])**2))
+        normes.append( sqrt((bee[0]-i[0])**2 + (bee[1]-i[1])**2) )
+
     for i in range(3):
         idx = normes.index(min(normes))
         normes.pop(idx)
-        nearest.append(X.pop(idx))
+        nearest.append(X[idx])
+        X.pop(idx)
+        
     return nearest
 
 def fobj(bee,proche):
@@ -39,27 +45,82 @@ def gradobj(bee,proche):
 		s[1]+=2*(bee[1]-p[1])
 	return s
 
-def deplacement2(bee, proche):
-    #bee = [sum([i[0] for i in proche])/3.0, sum([i[1] for i in proche])/3.0]
-    eps=0.001
-    alpha=0.002
-    #f=fobj(bee,proche)
-    grad=gradobj(bee,proche)
-    ngrad=grad[0]**2 + grad[1]**2
-    while ngrad>=eps:
-    	bee[0]=bee[0] - alpha*grad[0]
-    	bee[1]=bee[1] - alpha*grad[1]
-    	grad=gradobj(bee,proche)
-    	ngrad=grad[0]**2 + grad[1]**2
-    return bee
+def angles(proche): # p0-p1 = l2// p0-p2=l1 //p1-p2=l0
 
+    l0=sqrt( (proche[2][0]-proche[1][0])**2 + (proche[2][1]-proche[1][1])**2 )
+    l1=sqrt( (proche[0][0]-proche[2][0])**2 + (proche[0][1]-proche[2][1])**2 )
+    l2=sqrt( (proche[0][0]-proche[1][0])**2 + (proche[0][1]-proche[1][1])**2 )
+    
+    eps=0.0001
+    if (l0==0 or l1==0 or l2==0) :#or ((abs(l0-l1) <=eps) and (abs(l1-l2)<=eps) and (abs(l0-l2)<=eps)) ):
+        return -1
+    if ( (abs(l0-l1) <=eps) and (abs(l1-l2)<=eps) and (abs(l0-l2)<=eps) ):
+        return -2
+    
+    A=float(l1**2 + l2**2 - l0**2)/ float(2.0*l1*l2)
+    B=float(l0**2 + l2**2 - l1**2)/ float(2.0*l0*l2)
+    C=(l1**2 + l0**2 - l2**2)/ (2.0*l1*l0)
+
+
+    Z=[A,B,C]
+    for i in Z:
+        if abs(float(i))<=1.0:
+            if float(i)<=-1:
+                i=-1.0
+            else:
+                i=1.0
+      
+    a0= acos(Z[0])
+    a1= acos(Z[1])
+    a2= acos(Z[2])
+#    print("long : l0,l1,l2")
+#    print(l0,l1,l2)
+#    print("val")
+#    print (A,B,C)
+#    print("arcos")
+#    print(a0,a1,a2)
+    
+    if (a0 >=2*np.pi/3):
+        return 0
+    if (a1 >=2*np.pi/3):
+        return 1
+    if (a2 >=2*np.pi/3):
+        return 2
+    
+    return -1
+
+def deplacement2(bee, proche):
+    
+    #teste angle >=120
+    ind=angles(proche)
+    if (ind >-1) :
+        bee=proche[ind]
+        return bee
+    
+    if (ind==-2) :
+        return deplacement(bee,proche)
+    # sinon decente gradient 
+    eps=0.000001
+    alpha=0.0002
+    grad=gradobj(bee,proche)
+    #ngrad=np.sqrt(grad[0]**2 + grad[1]**2)
+    f=5000
+    f2=fobj(bee,proche)
+    while abs(f-f2)>=eps:
+        bee[0]=bee[0] - alpha*grad[0]
+        bee[1]=bee[1] - alpha*grad[1]
+        grad=gradobj(bee,proche)
+        f=f2
+        f2=fobj(bee,proche)
+    return bee
+#ngrad=grad[0]**2 + grad[1]**2
 def deplacement(bee, proche):
     bee = [sum([i[0] for i in proche])/3.0, sum([i[1] for i in proche])/3.0]
     return bee
 
 def affichage(bees, T, links):
-    plt.scatter([i[0] for i in bees], [i[1] for i in bees], s = 50, c = 'blue')
-    plt.scatter([i[0] for i in T], [i[1] for i in T], s = 80, c = 'red')
+    plt.scatter([i[0] for i in bees], [i[1] for i in bees], s = 50, c = 'red')
+    plt.scatter([i[0] for i in T], [i[1] for i in T], s = 80, c = 'blue')
     for idx, lien in enumerate(links):
         X0 = bees[idx]
         for X1 in lien:
@@ -70,12 +131,15 @@ def affichage(bees, T, links):
 if __name__ == '__main__':
     seed(1)
     T = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
+    #T = [[0.0,5.0], [0.0,0.], [2.5, 2.5], [2.0, 5*0.8], [3.5,3.5], [1.0,0.5], [ 1.5,3.5]]
     #T = [[0.0,0.0], [0.0,1.0], [1.0,1.0], [1.0,0.0]]
     bees = create_abeille(T)
     links = [[] for i in range(len(bees))]
     for i in range(5):
         affichage(bees, T, links)
         for j, bee in enumerate(bees):
-            nearest = sonar(bee, [a for a in bees if a!=bee], T)
+            T = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
+            nearest = sonar(bee, T)
+            T = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]            
             bees[j] = deplacement2(bee, nearest)
             links[j] = nearest

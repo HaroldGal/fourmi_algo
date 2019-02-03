@@ -4,7 +4,7 @@ from random import random, seed, choice
 from collections import Counter
 from math import log, sqrt
 import numpy as np
-
+from math import acos
 ###### VAR GLOB #####
 
 size = 10 # taille maillage
@@ -175,18 +175,74 @@ def gradobj(bee,proche):
 		s[1]+=2*(bee[1]-p[1])
 	return s
 
-def deplacement2(bee, proche):
-    eps=0.001
-    alpha=0.002
-    grad=gradobj(bee,proche)
-    ngrad=grad[0]**2 + grad[1]**2
-    while ngrad>=eps:
-    	bee[0]=bee[0] - alpha*grad[0]
-    	bee[1]=bee[1] - alpha*grad[1]
-    	grad=gradobj(bee,proche)
-    	ngrad=grad[0]**2 + grad[1]**2
-    return bee
+def angles(proche): # p0-p1 = l2// p0-p2=l1 //p1-p2=l0
 
+    l0=sqrt( (proche[2][0]-proche[1][0])**2 + (proche[2][1]-proche[1][1])**2 )
+    l1=sqrt( (proche[0][0]-proche[2][0])**2 + (proche[0][1]-proche[2][1])**2 )
+    l2=sqrt( (proche[0][0]-proche[1][0])**2 + (proche[0][1]-proche[1][1])**2 )
+    
+    eps=0.0001
+    if (l0==0 or l1==0 or l2==0) :#or ((abs(l0-l1) <=eps) and (abs(l1-l2)<=eps) and (abs(l0-l2)<=eps)) ):
+        return -1
+    if ( (abs(l0-l1) <=eps) and (abs(l1-l2)<=eps) and (abs(l0-l2)<=eps) ):
+        return -2
+    
+    A=float(l1**2 + l2**2 - l0**2)/ float(2.0*l1*l2)
+    B=float(l0**2 + l2**2 - l1**2)/ float(2.0*l0*l2)
+    C=(l1**2 + l0**2 - l2**2)/ (2.0*l1*l0)
+
+
+    Z=[A,B,C]
+    for i in Z:
+        if abs(float(i))<=1.0:
+            if float(i)<=-1:
+                i=-1.0
+            else:
+                i=1.0
+      
+    a0= acos(Z[0])
+    a1= acos(Z[1])
+    a2= acos(Z[2])
+#    print("long : l0,l1,l2")
+#    print(l0,l1,l2)
+#    print("val")
+#    print (A,B,C)
+#    print("arcos")
+#    print(a0,a1,a2)
+    
+    if (a0 >=2*np.pi/3):
+        return 0
+    if (a1 >=2*np.pi/3):
+        return 1
+    if (a2 >=2*np.pi/3):
+        return 2
+    
+    return -1
+
+def deplacement2(bee, proche):
+    
+    #teste angle >=120
+    ind=angles(proche)
+    if (ind >-1) :
+        bee=proche[ind]
+        return bee
+    
+    if (ind==-2) :
+        return deplacement(bee,proche)
+    # sinon decente gradient 
+    eps=0.000001
+    alpha=0.0002
+    grad=gradobj(bee,proche)
+    #ngrad=np.sqrt(grad[0]**2 + grad[1]**2)
+    f=5000
+    f2=fobj(bee,proche)
+    while abs(f-f2)>=eps:
+        bee[0]=bee[0] - alpha*grad[0]
+        bee[1]=bee[1] - alpha*grad[1]
+        grad=gradobj(bee,proche)
+        f=f2
+        f2=fobj(bee,proche)
+    return bee
 def create_Steiner(MeshVect, X1, X2, X3):
 	point_Steiner = [0,0]
 	proche = []
@@ -216,11 +272,12 @@ if __name__ == '__main__':
 	# ON RENTRE ICI LES COORDONNEES DES TERMINAUX
 
 	#X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
-
+    
 	X = [[1,0]]
 	for i in range(1,5):
 		X.append([np.cos(2*i*np.pi/5), np.sin(2*i*np.pi/5)])
 
+	X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
 	##################################################
 
 	(x, y, MeshVect, T) = mesh(X)
@@ -233,7 +290,7 @@ if __name__ == '__main__':
 	#moyenne = []
 	for arete in range(len(X)-1):
 		edge = initProba()
-		print(colonie)
+		#print(colonie)
 		for j in range(Ntour):
 			liste_chemin = []
 			liste_direction = []
