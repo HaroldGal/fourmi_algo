@@ -7,7 +7,7 @@ import numpy as np
 from math import acos
 ###### VAR GLOB #####
 
-size = 10 # taille maillage
+size = 15 # taille maillage
 mu = 0.2 # pheromone
 dissip = 0.5 # dissipation par tour
 Nfourmi = 200 # nb fourmi par maj_colonie
@@ -283,6 +283,7 @@ if __name__ == '__main__':
 	X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
 	##################################################
 
+	"""
 	(x, y, MeshVect, T) = mesh(X)
 	X_visite = [T[0]]
 	Steiner_points = []
@@ -341,12 +342,12 @@ if __name__ == '__main__':
 		for arete in liens:
 			plt.plot([Steiner_points[idx][0], MeshVect[0][arete[0]]], [Steiner_points[idx][1], MeshVect[1][arete[1]]], c='g' )
 	plt.show()
-
+	"""
 
 
 	# X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
 	# (x, y, MeshVect, T) = mesh(X)
-	#
+	
 	# #moyenne = []
 	# save = [0 for i in range(size*size*4)]
 	# for X0 in T:
@@ -369,7 +370,7 @@ if __name__ == '__main__':
 
 	# X = [[0.0,1.0], [0.0,0.0], [1.0,1.0],[1.0,0.0]]
 	# (x, y, MeshVect, T) = mesh(X)
-	#
+	
 	# #moyenne = []
 	# save = [0 for i in range(size*size*4)]
 	# for X0 in T:

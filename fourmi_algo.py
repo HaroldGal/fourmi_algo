@@ -77,6 +77,28 @@ def mesh(Steiner_points):
 	return (x,y, MeshVect, T) # maillage x, maillage y, vecteur de maille, ...
 	# ... position matriciel des terminaux
 
+def double_plot(Proba, MeshVect, x, y, liste_chemin, T):
+
+	mat = [[0 for i in range(size)] for j in range(size)]
+	for i in range(size):
+		for j in range(size):
+			mat[i][j] = sum([Proba[k*size*size + i*size+j] for k in range(4)])
+	
+	
+
+	plt.figure(2)
+	plt.subplot(211)
+	plt.matshow(mat, origin='lower')
+	plt.subplot(212)
+	plt.scatter(x, y, s = 10)
+	plt.scatter([MeshVect[0][i[0]] for i in T],[MeshVect[1][i[1]] for i in T], s = 80, c = 'red')
+	for chemin in liste_chemin:
+		for i in range(len(chemin)-1) :
+			X1, X2 = chemin[i], chemin[i+1]
+			plt.plot([MeshVect[0][X1[0]], MeshVect[0][X2[0]]], [MeshVect[1][X1[1]], MeshVect[1][X2[1]]], c='g' )
+
+	plt.show()
+
 # affichage de la matrice proba
 def print_matrix_proba(matrice, taille):
 	for i in range(4*taille):
@@ -241,6 +263,7 @@ if __name__ == '__main__':
 	# norme_proba(save)
 
 	# X= [[0.0,0.0], [0.25,0.5]]
+	# save = [0 for i in range(size*size*4)]
 	# (x, y, MeshVect, T) = mesh(X)
 	# colonie = [T[0]]
 	# plot_chemin = []
@@ -258,3 +281,4 @@ if __name__ == '__main__':
 	# 	chemin, direction = cheminFourmi(colonie, edge, T)
 	# 	plot_chemin.append(chemin)
 	# 	afficher_chemin(MeshVect, x, y, plot_chemin, T)
+	# 	#norme_proba(edge)
