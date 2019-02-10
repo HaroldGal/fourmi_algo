@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from random import random
 import numpy as np
 
-
+#points doivent être triés 
 T = [[0.0,0.0], [0.0,1.0], [1.0,0.0]]
 print("Test")
 #T = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
