@@ -9,7 +9,7 @@ print("Test")
 #T = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
 #T = [[0.0,5.0], [0.0,0.], [2.5, 2.5], [2.0, 5*0.8], [3.5,3.5], [1.0,0.5], [ 1.5,3.5]]
 
-#test code point de fermat - ON a enfaite une seule abeille 
+#test code point de fermat - ON a enfaite une seule abeille
 def affichage(bees, T, links):
     plt.scatter([i[0] for i in bees], [i[1] for i in bees], s = 50, c = 'blue')
     plt.scatter([i[0] for i in T], [i[1] for i in T], s = 80, c = 'red')
@@ -30,7 +30,7 @@ def median(F,Points):
     W=x=y=0
     dist=0
     for p in Points:
-        d=distance(F,p) 
+        d=distance(F,p)
         w=1.0/d
         W = W+ w
         x = x + p[0]*w
@@ -39,11 +39,11 @@ def median(F,Points):
     return x/W, y/W, dist
 
 
-# lancer l'alorithme de recherche de la mediane jusqua ce que la distance au point de fermat ( somme des distances de chaque point ) soit minimal 
+# lancer l'alorithme de recherche de la mediane jusqua ce que la distance au point de fermat ( somme des distances de chaque point ) soit minimal
 def geometric_median(Points,eps):
     n=float(len(Points))
-    Pini=[sum(P[0] for P in Points)/n,sum(P[1] for P in T)/n]#point initial : moyenne de tous les points 
-    distIni=0 
+    Pini=[sum(P[0] for P in Points)/n,sum(P[1] for P in T)/n]#point initial : moyenne de tous les points
+    distIni=0
     for i in range(len(Points)):
         distIni=distIni+distance(Points[i],Pini)
     print(distIni)
@@ -57,13 +57,10 @@ def geometric_median(Points,eps):
         if (dist < eps or cpt== cptMAX or dist > distIni):
             print(dist)
             Fermat = [Qx,Qy]
-            return Fermat 
+            return Fermat
         cpt=cpt+1
 
 
 
 FermatF=geometric_median(T,0.1)
-affichage([Fermat], T, links)
-
-
-
+affichage([FermatF], T, links)
