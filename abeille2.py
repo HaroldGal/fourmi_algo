@@ -143,8 +143,6 @@ if __name__ == '__main__':
     bees = create_abeille(T)
     links = [[] for i in range(len(bees))]
     for i in range(8):
-        #affichage(bees, T, links)
-
         for j, bee in enumerate(bees):
             #T = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
             #T = [[0.0,0.0], [0.0,1.0], [1.0,1.0], [1.0,0.0]]
