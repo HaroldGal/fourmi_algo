@@ -3,6 +3,11 @@ import matplotlib.pyplot as plt
 from random import random
 import numpy as np
 
+
+
+def create_Fermat(p1,p2,p3):
+
+
 def create_abeille(T):
     bees = []
     min_x = min([i[0] for i in T])
