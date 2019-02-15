@@ -58,6 +58,8 @@ def median(F,Points):
         dist=dist+d
     return x/W, y/W, dist
 
+
+
 #Lancer l'alorithme de recherche de la médiane jusqu' a ce que la distance entre deux itérations soit inférieure à epsilon 
 def geometric_median(Points,eps):
     n=float(len(Points))
@@ -148,6 +150,45 @@ def sonar3(bee, bees, beesOK, beesN, NonVisited):
 
 
 
+#Ajout d'une condition pour qu'une abeille soit relié à au moin 1 terminal 
+def sonar4(bee, bees, NonVisited):
+    nearest = []
+    # calcul carre des normes
+    normesNV=[]
+    cpt=0
+    for i in NonVisited:
+        normesNV.append(abs((bee[0]-i[0])**2 + (bee[1]-i[1])**2))
+    #if normesNV != []:
+    if(len(normesNV) > 1):
+        idx = normesNV.index(min(normesNV))
+        nearest.append(NonVisited.pop(idx))
+    elif (len(normesNV) == 1):
+        idx=normesNV.index(normesNV[0])
+        nearest.append(NonVisited.pop(idx))
+    elif (normesNV == []):
+        cpt=cpt+1
+
+    X = bees + NonVisited
+    normes= []
+    for i in X:
+        normes.append(abs((bee[0]-i[0])**2 + (bee[1]-i[1])**2))
+
+    if (len(normes) > 1):
+        for i in range(2+cpt):
+            idx = normes.index(min(normes))
+            normes.pop(idx)
+            nearest.append(X.pop(idx))
+        for k in range(len(nearest)):
+            if (nearest[k] in NonVisited ) :
+                NonVisited.remove(nearest[k])
+
+    else : 
+        if(X.pop(normes.index(normes[0])) in NonVisited) :
+            nearest.append(normes.index(normes[0]))
+            NonVisited.remove(nearest[0])
+    return nearest, NonVisited
+
+
 
 
 
@@ -186,11 +227,11 @@ if __name__ == '__main__':
             #lancement des fonctions sonar 
             #nearest=sonar1(bee, [a for a in bees if a!=bee],T)
             #nearest, NonVisited=sonar2(bee, [a for a in bees if a!=bee], NonVisited)
-            nearest, NonVisited, beesOK, beesN=sonar3(bee, bees, beesOK, beesN, NonVisited)
+            #nearest, NonVisited, beesOK, beesN=sonar3(bee, bees, beesOK, beesN, NonVisited)
+            nearest,NonVisited=sonar4(bee, [a for a in bees if a!=bee], NonVisited)
             bees[j]=geometric_median(nearest,0.1)
             links[j]=nearest
             
-# calculer la distance dans links 
     affichage(bees, T, links)
 
 
