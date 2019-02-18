@@ -7,7 +7,7 @@ import numpy as np
 from math import acos
 ###### VAR GLOB #####
 
-size = 15 # taille maillage
+size = 10 # taille maillage
 mu = 0.2 # pheromone
 dissip = 0.5 # dissipation par tour
 Nfourmi = 200 # nb fourmi par maj_colonie
@@ -180,7 +180,7 @@ def angles(proche): # p0-p1 = l2// p0-p2=l1 //p1-p2=l0
     l0=sqrt( (proche[2][0]-proche[1][0])**2 + (proche[2][1]-proche[1][1])**2 )
     l1=sqrt( (proche[0][0]-proche[2][0])**2 + (proche[0][1]-proche[2][1])**2 )
     l2=sqrt( (proche[0][0]-proche[1][0])**2 + (proche[0][1]-proche[1][1])**2 )
-    
+
     eps=0.0001
     #triangle plat
     if (l0==0 or l1==0 or l2==0) :
@@ -188,7 +188,7 @@ def angles(proche): # p0-p1 = l2// p0-p2=l1 //p1-p2=l0
     #triangle equilateral
     if ( (abs(l0-l1) <=eps) and (abs(l1-l2)<=eps) and (abs(l0-l2)<=eps) ):
         return -2
-    
+
     A=float(l1**2 + l2**2 - l0**2)/ float(2.0*l1*l2)
     B=float(l0**2 + l2**2 - l1**2)/ float(2.0*l0*l2)
     C=(l1**2 + l0**2 - l2**2)/ (2.0*l1*l0)
@@ -204,7 +204,7 @@ def angles(proche): # p0-p1 = l2// p0-p2=l1 //p1-p2=l0
     #mesure angle
     a0= acos(Z[0])
     a1= acos(Z[1])
-    a2= acos(Z[2])    
+    a2= acos(Z[2])
     # si angle >120 alors steiner se confond avec sommet
     if (a0 >=2*np.pi/3):
         return 0
@@ -212,7 +212,7 @@ def angles(proche): # p0-p1 = l2// p0-p2=l1 //p1-p2=l0
         return 1
     if (a2 >=2*np.pi/3):
         return 2
-    
+
     return -1
 
 #triangle equilateral
@@ -221,18 +221,18 @@ def deplacement(bee, proche):
     return bee
 
 def deplacement2(bee, proche):
-    
+
     #teste angle >=120
     ind=angles(proche)
     if (ind >-1) :
         bee=proche[ind]
         return bee
-    
+
     #triangle equilateral
     if (ind==-2) :
         return deplacement(bee,proche)
-    
-    # sinon descente gradient 
+
+    # sinon descente gradient
     eps=0.000001
     alpha=0.0002
     grad=gradobj(bee,proche)
@@ -275,7 +275,7 @@ if __name__ == '__main__':
 	# ON RENTRE ICI LES COORDONNEES DES TERMINAUX
 
 	#X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
-    
+
 	X = [[1,0]]
 	for i in range(1,5):
 		X.append([np.cos(2*i*np.pi/5), np.sin(2*i*np.pi/5)])
@@ -283,7 +283,7 @@ if __name__ == '__main__':
 	X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
 	##################################################
 
-	"""
+
 	(x, y, MeshVect, T) = mesh(X)
 	X_visite = [T[0]]
 	Steiner_points = []
@@ -342,12 +342,12 @@ if __name__ == '__main__':
 		for arete in liens:
 			plt.plot([Steiner_points[idx][0], MeshVect[0][arete[0]]], [Steiner_points[idx][1], MeshVect[1][arete[1]]], c='g' )
 	plt.show()
-	"""
+
 
 
 	# X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
 	# (x, y, MeshVect, T) = mesh(X)
-	
+
 	# #moyenne = []
 	# save = [0 for i in range(size*size*4)]
 	# for X0 in T:
@@ -370,7 +370,7 @@ if __name__ == '__main__':
 
 	# X = [[0.0,1.0], [0.0,0.0], [1.0,1.0],[1.0,0.0]]
 	# (x, y, MeshVect, T) = mesh(X)
-	
+
 	# #moyenne = []
 	# save = [0 for i in range(size*size*4)]
 	# for X0 in T:

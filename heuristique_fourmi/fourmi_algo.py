@@ -83,8 +83,8 @@ def double_plot(Proba, MeshVect, x, y, liste_chemin, T):
 	for i in range(size):
 		for j in range(size):
 			mat[i][j] = sum([Proba[k*size*size + i*size+j] for k in range(4)])
-	
-	
+
+
 
 	plt.figure(2)
 	plt.subplot(211)
@@ -216,69 +216,3 @@ if __name__ == '__main__':
 		plot_chemin.append(best_path)
 		afficher_chemin(MeshVect, x, y, plot_chemin, T)
 		maj_colonie(colonie, best_path)
-
-	# X = [[0.0,1.0], [0.0,0.], [0.5, 0.5], [0.4, 0.8], [0.7,0.7], [0.2,0.1], [ 0.3,0.7]]
-	# (x, y, MeshVect, T) = mesh(X)
-	#
-	# #moyenne = []
-	# save = [0 for i in range(size*size*4)]
-	# for X0 in T:
-	# 	for X1 in T:
-	# 		if X0==X1 :
-	# 			continue
-	# 		edge = initProba()
-	# 		print("done")
-	# 		liste_chemin = []
-	# 		liste_direction = []
-	# 		for i in range(Nfourmi):
-	# 			chemin, direction = cheminFourmi([X0], edge, [X0,X1])
-	# 			liste_chemin.append(chemin)
-	# 			liste_direction.append(direction)
-	# 		#moyenne.append(sum([len(c) for c in liste_chemin])/Nfourmi)
-	# 		maj_proba(edge, liste_chemin, liste_direction)
-	# 		save = [save[i]+log(max(0.1,edge[i])) for i in range(len(edge))]
-	# norme_proba(save)
-
-
-	# X = [[0.0,1.0], [0.0,0.0], [1.0,1.0],[1.0,0.0]]
-	# (x, y, MeshVect, T) = mesh(X)
-	#
-	# #moyenne = []
-	# save = [0 for i in range(size*size*4)]
-	# for X0 in T:
-	# 	for X1 in T:
-	# 		if X0==X1 :
-	# 			continue
-	# 		edge = initProba()
-	# 		print("done")
-	# 		liste_chemin = []
-	# 		liste_direction = []
-	# 		for i in range(Nfourmi):
-	# 			chemin, direction = cheminFourmi([X0], edge, [X0,X1])
-	# 			liste_chemin.append(chemin)
-	# 			liste_direction.append(direction)
-	# 		#moyenne.append(sum([len(c) for c in liste_chemin])/Nfourmi)
-	# 		maj_proba(edge, liste_chemin, liste_direction)
-	# 		save = [save[i]+log(max(0.1,edge[i])) for i in range(len(edge))]
-	# norme_proba(save)
-
-	# X= [[0.0,0.0], [0.25,0.5]]
-	# save = [0 for i in range(size*size*4)]
-	# (x, y, MeshVect, T) = mesh(X)
-	# colonie = [T[0]]
-	# plot_chemin = []
-	# edge = initProba()
-	# for j in range(Ntour):
-	# 	plot_chemin = []
-	# 	liste_chemin = []
-	# 	liste_direction = []
-	# 	for i in range(Nfourmi):
-	# 		chemin, direction = cheminFourmi(colonie, edge, T)
-	# 		liste_chemin.append(chemin)
-	# 		liste_direction.append(direction)
-	# 	#moyenne.append(sum([len(c) for c in liste_chemin])/Nfourmi)
-	# 	maj_proba(edge, liste_chemin, liste_direction)
-	# 	chemin, direction = cheminFourmi(colonie, edge, T)
-	# 	plot_chemin.append(chemin)
-	# 	afficher_chemin(MeshVect, x, y, plot_chemin, T)
-	# 	#norme_proba(edge)

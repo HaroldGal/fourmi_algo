@@ -36,21 +36,21 @@ def distance(P1,P2):
     return np.sqrt((P1[0]-P2[0])*(P1[0]-P2[0])+(P1[1]-P2[1])*(P1[1]-P2[1]))
 
 
-#Fonction déplacement - définir une nouvelle position pour l'abeille 
+#Fonction déplacement - définir une nouvelle position pour l'abeille
 def deplacement(bee, proche):
     bee = [sum([i[0] for i in proche])/3.0, sum([i[1] for i in proche])/3.0]
     return bee
 
 
 
-# 2 fonction afin de définir une nouvelle position pour l'abeille en utilisant le point de Fermat 
+# 2 fonction afin de définir une nouvelle position pour l'abeille en utilisant le point de Fermat
 #definir la mediane --> 1 point au centre des autres points ( point de Fermat )
 
 def median(F,Points):
     W=x=y=0
     dist=0
     for p in Points:
-        d=distance(F,p) 
+        d=distance(F,p)
         w=1.0/d
         W = W+ w
         x = x + p[0]*w
@@ -60,11 +60,11 @@ def median(F,Points):
 
 
 
-#Lancer l'alorithme de recherche de la médiane jusqu' a ce que la distance entre deux itérations soit inférieure à epsilon 
+#Lancer l'alorithme de recherche de la médiane jusqu' a ce que la distance entre deux itérations soit inférieure à epsilon
 def geometric_median(Points,eps):
     n=float(len(Points))
-    Pini=[sum(P[0] for P in Points)/n,sum(P[1] for P in T)/n]#point initial : moyenne de tous les points 
-    distIni=0 
+    Pini=[sum(P[0] for P in Points)/n,sum(P[1] for P in T)/n]#point initial : moyenne de tous les points
+    distIni=0
     for i in range(len(Points)):
         distIni=distIni+distance(Points[i],Pini)
     P=Pini
@@ -75,7 +75,7 @@ def geometric_median(Points,eps):
         P=[Qx,Qy]
         if (dist < eps or cpt== cptMAX or dist > distIni):
             Fermat = [Qx,Qy]
-            return Fermat 
+            return Fermat
         cpt=cpt+1
 
 
@@ -87,7 +87,7 @@ def geometric_median(Points,eps):
 
 
 
-#Fonction sonar 1 de base - renvoie les 3 voisins les plus proche de l'abeille bee en fonction de la distance euclidienne  
+#Fonction sonar 1 de base - renvoie les 3 voisins les plus proche de l'abeille bee en fonction de la distance euclidienne
 def sonar1(bee, bees, T):
     nearest = []
     X = bees + T
@@ -127,7 +127,7 @@ def sonar2(bee, bees, NonVisited):
 
 
 #Fonction sonar 3 -
-#Ajout d'une contraite sur le nombre de liaisons des abeilles 
+#Ajout d'une contraite sur le nombre de liaisons des abeilles
 def sonar3(bee, bees, beesOK, beesN, NonVisited):
     nearest = []
     X = beesOK + NonVisited
@@ -144,13 +144,13 @@ def sonar3(bee, bees, beesOK, beesN, NonVisited):
         elif nearest[k] in bees:
             beesN[bees.index(nearest[k])]= beesN[bees.index(nearest[k])] + 1
     for h in range(len(beesN)):
-        if beesN[h] > 3 and bees[h] in beesOK: #Nombre de liaisons max pour une abeille = 3 
+        if beesN[h] > 3 and bees[h] in beesOK: #Nombre de liaisons max pour une abeille = 3
             beesOK.remove(bees[h])
     return nearest, NonVisited, beesOK, beesN
 
 
 
-#Ajout d'une condition pour qu'une abeille soit relié à au moin 1 terminal 
+#Ajout d'une condition pour qu'une abeille soit relié à au moin 1 terminal
 def sonar4(bee, bees, NonVisited):
     nearest = []
     # calcul carre des normes
@@ -182,7 +182,7 @@ def sonar4(bee, bees, NonVisited):
             if (nearest[k] in NonVisited ) :
                 NonVisited.remove(nearest[k])
 
-    else : 
+    else :
         if(X.pop(normes.index(normes[0])) in NonVisited) :
             nearest.append(normes.index(normes[0]))
             NonVisited.remove(nearest[0])
@@ -193,45 +193,43 @@ def sonar4(bee, bees, NonVisited):
 
 
 
-#Fonction principale 
+#Fonction principale
 if __name__ == '__main__':
     seed(1)
     nbIte=8 # on determine un nombre d'itérations pour definir l'arbre de steiner minimale
-    T=[] # Stockage des positions des terminaux 
+    T=[] # Stockage des positions des terminaux
     cst=6
-    #cas symétriques : 
-    #cas du pentagone 
+    #cas symétriques :
+    #cas du pentagone
     for i in range(0,cst):
         T.append([np.cos(2*i*np.pi/cst), np.sin(2*i*np.pi/cst)])
     #cas du carré
-    #T = [[0.0,0.0], [0.0,1.0], [1.0,1.0], [1.0,0.0]] 
-    #cas non symétrique : 
+    #T = [[0.0,0.0], [0.0,1.0], [1.0,1.0], [1.0,0.0]]
+    #cas non symétrique :
     #T = [[0.0,5.0], [0.0,0.], [2.5, 2.5], [2.0, 5*0.8], [3.5,3.5], [1.0,0.5], [ 1.5,3.5]]
 
     bees = create_abeille(T)
     links = [[] for i in range(len(bees))]
-    for i in range(nbIte): 
+    for i in range(nbIte):
         beesN=[]  # un tableau contenant le nombre de liaisons pour chaque abeilles
-        beesOK=[] # un tableau contenant les abeilles que l'on peut encore choisir de relier 
+        beesOK=[] # un tableau contenant les abeilles que l'on peut encore choisir de relier
         for b in range(len(bees)):
             beesN.append(0)
         for b1 in range(len(bees)):
             beesOK.append(bees[b1])
-        #creation du tableau contenant les terminaux déja visités 
+        #creation du tableau contenant les terminaux déja visités
         NonVisited=[]
-        #au départ tous les terminaux sont visités 
+        #au départ tous les terminaux sont visités
         for h in range(len(T)):
             NonVisited.append(T[h])
         affichage(bees, T, links)
         for j, bee in enumerate(bees):
-            #lancement des fonctions sonar 
+            #lancement des fonctions sonar
             #nearest=sonar1(bee, [a for a in bees if a!=bee],T)
             #nearest, NonVisited=sonar2(bee, [a for a in bees if a!=bee], NonVisited)
             #nearest, NonVisited, beesOK, beesN=sonar3(bee, bees, beesOK, beesN, NonVisited)
             nearest,NonVisited=sonar4(bee, [a for a in bees if a!=bee], NonVisited)
             bees[j]=geometric_median(nearest,0.1)
             links[j]=nearest
-            
+
     affichage(bees, T, links)
-
-
