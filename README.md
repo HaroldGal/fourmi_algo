@@ -3,6 +3,8 @@
 Le problème de l'arbre Steiner minimal est de trouver un arbre couvrant de longueur minimal sur un arbre qui à ajouter des sommets et des arrêtes a cet arbre.
 Une large documentation sur l'étude de ce problème est disponible sur le net. Le logiciel **geosteiner** est optimal pour avoir des résultats en 2 dimensions et l'algorithme de Smith énumère les topologies possible en dimensions plus grande. Cette énumeration s'effectue en temps non polynomial, nous cherchons donc une métaheuristique permettant d'approximer efficacement un arbre steiner minimal.
 
+Un rapport de projet, avec des renseignements supplémentaires sur les métaheuristiques et des résultats est disponible dans le répertoire **documentation**. Attention, la méta-heuristiques des abeilles a été améliorée depuis l'écriture de ce rapport.
+
 ## Prérequis
 
 Python3 est utilisé.
@@ -27,9 +29,9 @@ Une amélioration pour la recherche de point Steiner consiste a poser le point d
 
 ### Organisation
 
-Deux scripts sont disponibles, les paramètres sont à changer dans le script dans la première partie. 
+Deux scripts sont disponibles, les paramètres sont à changer dans le script dans la première partie.
 
-* fourmi_algo - Déroule un algorithme de recherche du plus court chemin d'arête à point. Trouve le plus court réseau. 
+* fourmi_algo - Déroule un algorithme de recherche du plus court chemin d'arête à point. Trouve le plus court réseau.
 
 ```
 python3 fourmi_algo.py
@@ -41,7 +43,7 @@ python3 fourmi_algo.py
 python3 ant_steiner.py
 ```
 
-### Complexité 
+### Complexité
 
 La complexité dépend du maillage, et dépendra donc de la dimension. Algorithme non généralisable en grandes dimensions.
 
@@ -67,6 +69,6 @@ python3 abeilleRendu.py
 python3 bee_3d.py
 ```
 
-### Complexité 
+### Complexité
 
 La complexité dépend du nombre de points seulement, seul le calcul de norme (facile) dépend de la dimension. Les règles spécifiées ne sont pas encore suffisantes mais prometteuses.
